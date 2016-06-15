@@ -31,8 +31,7 @@ access to AWS metadata server on 169.254.169.254.
 
 
 ## Requirements
-### Additional package dependencies (except installed by default in Debian)
-1. python-configobj
+Nothing more than what is installed on standard Debian/Ubuntu.
 
 ## Configuration
 /etc/apt/s3auth.conf or <a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html">IAM role</a>
@@ -40,9 +39,10 @@ can provide credentials required for using private apt repositories.
 
 Example of s3auth.conf file:
 ```
+[s3]
 AccessKeyId = myaccesskey
 SecretAccessKey = mysecretaccesskey
-Token = ''
+Token =
 ```
 
 Token should be empty string.

@@ -22,9 +22,10 @@ import hmac
 import json
 import sys
 import os
-from configobj import ConfigObj
-
-import syslog
+try:
+    from ConfigParser import ConfigParser
+except ImportError:
+    from configparser import ConfigParser  # python 3
 
 
 class AWSCredentials(object):
@@ -59,19 +60,24 @@ class AWSCredentials(object):
         """
         Loading config file from predefined location.
         Example config file content:
+            [s3]
             AccessKeyId = mykey
             SecretAccessKey = mysecretkey
-            Token = '' # this can/have to be empty
+            Token = # this can/have to be empty
         """
         _CONF_FILE = '/etc/apt/s3auth.conf'
 
         # Checking if 'file' exists, if it does read it
         if os.path.isfile(os.path.expanduser(_CONF_FILE)):
-            config = ConfigObj(os.path.expanduser(_CONF_FILE))
-            return config
+            config = ConfigParser()
+            config.read([_CONF_FILE])
+            data = {}
+            data['AccessKeyId'] = config.get('s3', 'AccessKeyId')
+            data['SecretAccessKey'] = config.get('s3', 'SecretAccessKey')
+            data['Token'] = config.get('s3', 'Token')
+            return data
         else:
             raise Exception("Config file: %s doesn't exist" % _CONF_FILE)
-            syslog.syslog("Config file: %s doesn't exist" % _CONF_FILE)
 
     def get_credentials(self):
         """
@@ -83,8 +89,8 @@ class AWSCredentials(object):
 
         try:
             data = self.__load_config()
-        except:
-            pass
+        except Exception as exc:
+            print('WARN: {}'.format(exc))
 
         if data is None:
             self.__get_role()
