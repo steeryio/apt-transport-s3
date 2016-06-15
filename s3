@@ -287,7 +287,7 @@ class S3_method(object):
             if message['_number'] == 600:
                 try:
                     self.fetch(message)
-                except Exception, e:
+                except Exception as e:
                     self.fail(e.__class__.__name__ + ": " + str(e))
             else:
                 return 100
